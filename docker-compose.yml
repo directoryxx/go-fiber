@@ -1,0 +1,22 @@
+version: "2"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    tty: true
+    command: /bin/sh
+    environment:
+      username: test
+      password: test
+    ports: 
+      - "8010:8010"
+    volumes:
+      - .:/deploy
+    working_dir: /deploy
+    networks:
+      - dev-network
+
+networks:
+  dev-network:
+    external: true

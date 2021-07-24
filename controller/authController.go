@@ -1,8 +1,12 @@
 package controller
 
 import (
+	"fmt"
+
+	"github.com/directoryxx/go-fiber/database"
 	"github.com/directoryxx/go-fiber/models"
 	"github.com/gofiber/fiber/v2"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func Home(c *fiber.Ctx) error {
@@ -10,11 +14,23 @@ func Home(c *fiber.Ctx) error {
 }
 
 func Register(c *fiber.Ctx) error {
-	var user models.User
+	var data map[string]string
 
-	user.Id = 1
-	user.Username = "test"
-	user.Password = "test"
+	if err := c.BodyParser(&data); err != nil {
+		return err
+	}
+
+	password, _ := bcrypt.GenerateFromPassword([]byte(data["password"]), 14)
+
+	user := models.User{
+		Name:     data["name"],
+		Username: data["username"],
+		Password: password,
+	}
+
+	database.DB.Create(&user)
+
+	fmt.Println(user)
 
 	return c.JSON(user)
 }

@@ -13,4 +13,5 @@ func Setup(app *fiber.App) {
 
 	auth := v1.Group("/auth")
 	auth.Post("/register", controller.Register)
+	auth.Post("/login", controller.Login)
 }

@@ -12,6 +12,7 @@ import (
 )
 
 func main() {
+	// if cant reach db try add "()"
 	db, err := gorm.Open(mysql.Open("root:password@(mysql-server)/dev"), &gorm.Config{})
 
 	if err != nil {

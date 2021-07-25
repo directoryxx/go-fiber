@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/directoryxx/go-fiber/controller"
+	v2route "github.com/directoryxx/go-fiber/controller/v2"
 	"github.com/directoryxx/go-fiber/middleware"
 	"github.com/gofiber/fiber/v2"
 )
@@ -18,5 +19,8 @@ func Setup(app *fiber.App) {
 
 	dashboard := v1.Group("/dashboard")
 	dashboard.Get("/", middleware.JWTProtected(), controller.DashboardHome)
+
+	v2 := api.Group("/v2")
+	v2.Get("/", v2route.Home)
 
 }

@@ -4,10 +4,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/directoryxx/go-fiber/database"
 	"github.com/directoryxx/go-fiber/models"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -62,17 +62,16 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	claims := jwt.StandardClaims{
-		ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
-		Issuer:    "fiber",
-		Subject:   "user",
-		Id:        strconv.Itoa(int(user.ID)),
-	}
+	// Create token
+	token := jwt.New(jwt.SigningMethodHS256)
 
-	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	// Set claims
+	claims := token.Claims.(jwt.MapClaims)
+	claims["id"] = strconv.Itoa(int(user.ID))
+	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
 
-	token, err := jwtToken.SignedString([]byte("secret"))
-
+	// Generate encoded token and send it as response.
+	t, err := token.SignedString([]byte("secret"))
 	if err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
@@ -80,7 +79,7 @@ func Login(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"status":  "success",
 		"message": "Login successful",
-		"token":   token,
+		"token":   t,
 		// "user": user,
 	})
 }
